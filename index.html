@@ -75,4 +75,658 @@
         }
 
         .glow-button:hover {
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.6
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.6), 0 0 40px rgba(112, 0, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Before/After Slider Styling */
+        .comparison-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            user-select: none;
+        }
+
+        .comparison-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow: hidden;
+            width: 50%;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: #00f2fe;
+            box-shadow: 0 0 12px #00f2fe;
+            cursor: ew-resize;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #08090d;
+            border: 2px solid #00f2fe;
+            color: #00f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.8);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08090d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2430;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2fe;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-200 selection:bg-cyanNeon selection:text-black">
+
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo Section -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full border border-cyanNeon/50 p-0.5 bg-black/50 flex items-center justify-center shadow-[0_0_15px_rgba(0,242,254,0.3)]">
+                    <span class="font-heading font-bold text-xl text-gradient">SM</span>
+                </div>
+                <div>
+                    <h1 class="font-heading font-bold text-lg tracking-wider text-white group-hover:text-cyanNeon transition-colors">SWARAJ MOTION</h1>
+                    <p class="text-[10px] text-gray-400 -mt-1 tracking-widest uppercase">By Ritu Raj</p>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="#store" class="hover:text-cyanNeon transition-colors">Store</a>
+                <a href="#studio" class="hover:text-cyanNeon transition-colors">Preset Studio</a>
+                <a href="#transitions" class="hover:text-cyanNeon transition-colors">Transitions</a>
+                <a href="#sfx" class="hover:text-cyanNeon transition-colors">SFX Visualizer</a>
+            </nav>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Cart Button -->
+                <button onclick="toggleCart()" class="relative glass-card px-4 py-2 rounded-full flex items-center gap-2 hover:border-cyanNeon transition-all">
+                    <i class="fa-solid fa-cart-shopping text-cyanNeon"></i>
+                    <span class="text-sm font-bold">Cart</span>
+                    <span id="cart-count" class="bg-purpleNeon text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 py-16 lg:py-24 px-4 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-xs text-cyanNeon border-cyanNeon/30 mb-6">
+                    <i class="fa-solid fa-bolt"></i> Next-Gen Creative Assets
+                </div>
+                <h1 class="font-heading text-4xl lg:text-6xl font-extrabold leading-tight mb-6">
+                    Elevate Your Edits With <br>
+                    <span class="text-gradient">Cinematic Motion Assets</span>
+                </h1>
+                <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                    High-end Lightroom Presets, Video Transitions, Cinematic LUTs, and Sound FX crafted specifically for content creators, filmmakers, and video editors.
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <a href="#store" class="glow-button text-black font-bold px-8 py-4 rounded-xl flex items-center gap-3">
+                        <i class="fa-solid fa-bag-shopping"></i> Explore Asset Store
+                    </a>
+                    <a href="#studio" class="glass-card text-white font-semibold px-6 py-4 rounded-xl flex items-center gap-2 hover:border-cyanNeon">
+                        <i class="fa-solid fa-sliders text-cyanNeon"></i> Try Live Preset Studio
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/10">
+                    <div>
+                        <h3 class="font-heading font-bold text-2xl text-white">100%</h3>
+                        <p class="text-xs text-gray-400">Direct Profit (0% Tax/Fee)</p>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-2xl text-cyanNeon">Instant</h3>
+                        <p class="text-xs text-gray-400">Google Drive Delivery</p>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-2xl text-purpleNeon">4K Ultra</h3>
+                        <p class="text-xs text-gray-400">Pro Grade Quality</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Before/After Demo -->
+            <div class="glass-panel p-4 rounded-2xl relative shadow-[0_0_50px_rgba(0,242,254,0.15)]">
+                <div class="mb-3 flex justify-between items-center text-xs text-gray-400">
+                    <span><i class="fa-solid fa-wand-magic-sparkles text-cyanNeon"></i> Interactive Live Preview</span>
+                    <span class="text-cyanNeon font-mono">Drag slider to compare</span>
+                </div>
+                
+                <div id="hero-comparison" class="comparison-container h-[350px] lg:h-[400px]">
+                    <!-- After Image -->
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80" class="absolute inset-0 w-full h-full object-cover filter contrast-125 saturate-150 hue-rotate-15" alt="After Edit">
+                    <span class="absolute top-4 right-4 bg-purpleNeon/80 text-white text-xs px-3 py-1 rounded-full font-bold z-10 backdrop-blur-md">Cyberpunk Preset</span>
+
+                    <!-- Before Image (Overlay) -->
+                    <div class="comparison-overlay">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80" class="absolute inset-0 w-full h-full object-cover max-w-none filter grayscale contrast-90" alt="Before Edit" style="width: 100%;">
+                        <span class="absolute top-4 left-4 bg-black/80 text-white text-xs px-3 py-1 rounded-full font-bold z-10 border border-white/20">Original Raw</span>
+                    </div>
+
+                    <!-- Slider Handle -->
+                    <div class="slider-handle">
+                        <div class="slider-button">
+                            <i class="fa-solid fa-arrows-left-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Live Preset Studio -->
+    <section id="studio" class="py-20 px-4 max-w-7xl mx-auto relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <h2 class="font-heading text-3xl lg:text-4xl font-bold mb-4">Interactive <span class="text-gradient">Preset & LUT Studio</span></h2>
+            <p class="text-gray-400">Upload your own photo or use sample footage to test our color presets live before buying!</p>
+        </div>
+
+        <div class="glass-panel p-6 lg:p-8 rounded-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Controls Side -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">1. Select Preset Filter</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="applyPresetFilter('cyberpunk')" class="glass-card p-3 rounded-lg text-xs font-bold text-left hover:border-cyanNeon flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-cyanNeon"></span> Cyberpunk
+                            </button>
+                            <button onclick="applyPresetFilter('teal-orange')" class="glass-card p-3 rounded-lg text-xs font-bold text-left hover:border-cyanNeon flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-orange-500"></span> Teal & Orange
+                            </button>
+                            <button onclick="applyPresetFilter('moody-dark')" class="glass-card p-3 rounded-lg text-xs font-bold text-left hover:border-cyanNeon flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-gray-700"></span> Moody Dark
+                            </button>
+                            <button onclick="applyPresetFilter('golden-hour')" class="glass-card p-3 rounded-lg text-xs font-bold text-left hover:border-cyanNeon flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-amber-400"></span> Golden Hour
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Sliders -->
+                    <div class="space-y-4 pt-4 border-t border-white/10">
+                        <label class="block text-sm font-semibold">2. Manual Adjustments</label>
+                        
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>Contrast</span>
+                                <span id="val-contrast">100%</span>
+                            </div>
+                            <input type="range" id="slider-contrast" min="50" max="200" value="100" oninput="updateFilters()" class="w-full accent-cyanNeon">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>Saturation</span>
+                                <span id="val-saturate">100%</span>
+                            </div>
+                            <input type="range" id="slider-saturate" min="0" max="250" value="100" oninput="updateFilters()" class="w-full accent-cyanNeon">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>Temperature (Hue)</span>
+                                <span id="val-hue">0°</span>
+                            </div>
+                            <input type="range" id="slider-hue" min="-90" max="90" value="0" oninput="updateFilters()" class="w-full accent-cyanNeon">
+                        </div>
+                    </div>
+
+                    <!-- Upload Custom File -->
+                    <div class="pt-4 border-t border-white/10">
+                        <label class="block text-sm font-semibold mb-2">3. Try With Your Photo</label>
+                        <input type="file" id="user-image-input" accept="image/*" class="hidden" onchange="loadUserImage(event)">
+                        <button onclick="document.getElementById('user-image-input').click()" class="w-full glass-card py-3 rounded-xl text-xs font-bold text-cyanNeon hover:bg-cyanNeon/10 border-dashed border-cyanNeon/40">
+                            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Upload Your Photo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Display -->
+                <div class="lg:col-span-2 flex flex-col justify-center items-center">
+                    <div class="relative w-full h-[400px] rounded-xl overflow-hidden glass-card border border-white/10">
+                        <img id="studio-preview-img" src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover transition-all duration-300" alt="Studio Preview">
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3"><i class="fa-solid fa-circle-info text-cyanNeon"></i> Real-time HTML5 Canvas & WebGL color processing simulator.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Assets Store -->
+    <section id="store" class="py-20 px-4 max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+            <div>
+                <h2 class="font-heading text-3xl lg:text-4xl font-bold mb-2">Digital <span class="text-gradient">Asset Store</span></h2>
+                <p class="text-gray-400 text-sm">Select high quality assets and add them directly to your cart.</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap gap-2 glass-panel p-1.5 rounded-xl border border-white/10">
+                <button onclick="filterProducts('all')" class="filter-btn active px-4 py-2 rounded-lg text-xs font-bold bg-cyanNeon text-black">All Assets</button>
+                <button onclick="filterProducts('preset')" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold hover:text-cyanNeon">Lightroom Presets</button>
+                <button onclick="filterProducts('transition')" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold hover:text-cyanNeon">Transitions</button>
+                <button onclick="filterProducts('sfx')" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold hover:text-cyanNeon">Sound FX</button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Product items will be injected by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Slide-Over Shopping Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full max-w-md bg-[#0d0f17] border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+            <h3 class="font-heading font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-cyanNeon"></i> Your Shopping Cart
+            </h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Cart Items rendered via JS -->
+        </div>
+
+        <!-- Checkout Summary -->
+        <div class="p-6 border-t border-white/10 glass-panel">
+            <div class="space-y-2 text-sm mb-4">
+                <div class="flex justify-between text-gray-400">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">₹0</span>
+                </div>
+                <div class="flex justify-between text-gray-400">
+                    <span>Tax (0% Profit Direct)</span>
+                    <span class="text-green-400 font-bold">₹0 Free</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-white/10">
+                    <span>Total Amount</span>
+                    <span id="cart-total" class="text-cyanNeon">₹0</span>
+                </div>
+            </div>
+
+            <button onclick="openCheckoutModal()" class="w-full glow-button text-black font-bold py-3.5 rounded-xl flex items-center justify-center gap-2">
+                Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Instant UPI Payment & Download Unlock Modal -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 lg:p-8 relative border border-cyanNeon/30">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <h3 class="font-heading font-bold text-2xl text-gradient">Pay via UPI QR Code</h3>
+                <p class="text-xs text-gray-400 mt-1">Scan using GPay, PhonePe, or Paytm to unlock instant download</p>
+            </div>
+
+            <!-- Dynamic QR Code Container -->
+            <div class="bg-white p-4 rounded-xl max-w-[220px] mx-auto mb-6 shadow-[0_0_30px_rgba(0,242,254,0.3)]">
+                <img id="upi-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=rituraj@upi&pn=Swaraj%20Motion&am=499&cu=INR" class="w-full h-auto" alt="UPI QR Code">
+            </div>
+
+            <div class="text-center space-y-3 mb-6">
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10 inline-block text-sm">
+                    Total Pay: <span id="checkout-total-display" class="font-bold text-cyanNeon text-lg">₹499</span>
+                </div>
+                <p class="text-xs text-gray-400"><i class="fa-solid fa-shield-halved text-green-400"></i> Secure 0% Fee Instant UPI Transaction</p>
+            </div>
+
+            <!-- Verification Action -->
+            <button onclick="simulatePaymentVerification()" class="w-full glow-button text-black font-bold py-3.5 rounded-xl flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check-circle"></i> I Have Paid - Unlock Google Drive Link
+            </button>
+        </div>
+    </div>
+
+    <!-- Success Download Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-8 text-center border border-green-500/40">
+            <div class="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-green-500/40">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="font-heading font-bold text-2xl text-white mb-2">Payment Confirmed!</h3>
+            <p class="text-sm text-gray-300 mb-6">Thank you for purchasing from Swaraj Motion by Ritu Raj. Your digital assets are ready for instant download.</p>
+
+            <a href="https://drive.google.com" target="_blank" class="glow-button text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 w-full mb-4">
+                <i class="fa-brands fa-google-drive text-xl"></i> Access Google Drive Asset Pack
+            </a>
+
+            <button onclick="closeSuccessModal()" class="text-xs text-gray-400 hover:text-white underline">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Store Products Data
+        const products = [
+            {
+                id: 'p1',
+                title: 'Cyberpunk Neon Preset Pack',
+                category: 'preset',
+                price: 299,
+                originalPrice: 799,
+                rating: 4.9,
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80',
+                desc: '15 Lightroom Presets (.DNG + .XMP) for vibrant night photography.'
+            },
+            {
+                id: 'p2',
+                title: 'Cinematic Seamless Transitions',
+                category: 'transition',
+                price: 499,
+                originalPrice: 1299,
+                rating: 5.0,
+                image: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=600&q=80',
+                desc: '25+ Zoom, Whip Pan & Glitch Transitions for Premiere Pro & DaVinci.'
+            },
+            {
+                id: 'p3',
+                title: 'Teal & Orange LUTs Bundle',
+                category: 'preset',
+                price: 399,
+                originalPrice: 999,
+                rating: 4.8,
+                image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80',
+                desc: '10 Hollywood style color grading LUTs for video & photos.'
+            },
+            {
+                id: 'p4',
+                title: 'Ultimate Creator Sound FX Pack',
+                category: 'sfx',
+                price: 199,
+                originalPrice: 599,
+                rating: 4.9,
+                image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
+                desc: '50+ Whooshes, Risers, Cinematic Hits & Sub Drops.'
+            }
+        ];
+
+        let cart = [];
+
+        // Render Store Products
+        function renderProducts(filter = 'all') {
+            const container = document.getElementById('products-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+            filtered.forEach(p => {
+                const card = `
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group">
+                        <div>
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="${p.title}">
+                                <span class="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-cyanNeon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-cyanNeon/30">${p.category}</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-heading font-bold text-lg text-white group-hover:text-cyanNeon transition-colors">${p.title}</h3>
+                                    <span class="text-xs text-amber-400 flex items-center gap-1 font-bold"><i class="fa-solid fa-star"></i> ${p.rating}</span>
+                                </div>
+                                <p class="text-xs text-gray-400 mb-4">${p.desc}</p>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0 flex justify-between items-center border-t border-white/5 mt-auto">
+                            <div>
+                                <span class="text-xs text-gray-500 line-through">₹${p.originalPrice}</span>
+                                <span class="text-lg font-bold text-white block">₹${p.price}</span>
+                            </div>
+                            <button onclick="addToCart('${p.id}')" class="glass-card text-cyanNeon hover:bg-cyanNeon hover:text-black font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        // Filter Products
+        function filterProducts(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('bg-cyanNeon', 'text-black'));
+            event.target.classList.add('bg-cyanNeon', 'text-black');
+            renderProducts(category);
+        }
+
+        // Cart Actions
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            if (item && !cart.some(c => c.id === id)) {
+                cart.push(item);
+                updateCartUI();
+            }
+            toggleCart(true);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+
+            let total = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 text-sm py-12">Your cart is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    total += item.price;
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between glass-card p-3 rounded-xl border border-white/10">
+                            <div class="flex items-center gap-3">
+                                <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover" alt="">
+                                <div>
+                                    <h4 class="text-xs font-bold text-white">${item.title}</h4>
+                                    <span class="text-xs text-cyanNeon font-bold">₹${item.price}</span>
+                                </div>
+                            </div>
+                            <button onclick="removeFromCart('${item.id}')" class="text-gray-500 hover:text-red-400 p-2">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('cart-subtotal').innerText = '₹' + total;
+            document.getElementById('cart-total').innerText = '₹' + total;
+            document.getElementById('checkout-total-display').innerText = '₹' + total;
+        }
+
+        function toggleCart(open = null) {
+            const drawer = document.getElementById('cart-drawer');
+            if (open === true) {
+                drawer.classList.remove('translate-x-full');
+            } else if (open === false) {
+                drawer.classList.add('translate-x-full');
+            } else {
+                drawer.classList.toggle('translate-x-full');
+            }
+        }
+
+        // Checkout & Modals
+        function openCheckoutModal() {
+            if (cart.length === 0) return alert('Please add products to cart first!');
+            toggleCart(false);
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function simulatePaymentVerification() {
+            closeCheckoutModal();
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            document.getElementById('success-modal').classList.remove('hidden');
+            cart = [];
+            updateCartUI();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        // Studio Live Filter Processing
+        function applyPresetFilter(type) {
+            const contrast = document.getElementById('slider-contrast');
+            const saturate = document.getElementById('slider-saturate');
+            const hue = document.getElementById('slider-hue');
+
+            if (type === 'cyberpunk') {
+                contrast.value = 140; saturate.value = 180; hue.value = 30;
+            } else if (type === 'teal-orange') {
+                contrast.value = 130; saturate.value = 150; hue.value = -30;
+            } else if (type === 'moody-dark') {
+                contrast.value = 160; saturate.value = 60; hue.value = 0;
+            } else if (type === 'golden-hour') {
+                contrast.value = 110; saturate.value = 160; hue.value = 45;
+            }
+            updateFilters();
+        }
+
+        function updateFilters() {
+            const c = document.getElementById('slider-contrast').value;
+            const s = document.getElementById('slider-saturate').value;
+            const h = document.getElementById('slider-hue').value;
+
+            document.getElementById('val-contrast').innerText = c + '%';
+            document.getElementById('val-saturate').innerText = s + '%';
+            document.getElementById('val-hue').innerText = h + '°';
+
+            const img = document.getElementById('studio-preview-img');
+            img.style.filter = `contrast(${c}%) saturate(${s}%) hue-rotate(${h}deg)`;
+        }
+
+        function loadUserImage(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('studio-preview-img').src = evt.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Three.js Background Animation
+        function init3DBackground() {
+            const canvas = document.getElementById('bg-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Particles
+            const geometry = new THREE.BufferGeometry();
+            const count = 700;
+            const posArray = new Float32Array(count * 3);
+
+            for(let i=0; i<count*3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const material = new THREE.PointsMaterial({ size: 0.015, color: 0x00f2fe });
+            const particlesMesh = new THREE.Points(geometry, material);
+            scene.add(particlesMesh);
+
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // Before/After Drag Logic
+        function initHeroSlider() {
+            const container = document.getElementById('hero-comparison');
+            const overlay = container.querySelector('.comparison-overlay');
+            const handle = container.querySelector('.slider-handle');
+
+            let isDragging = false;
+
+            const move = (x) => {
+                const rect = container.getBoundingClientRect();
+                let position = ((x - rect.left) / rect.width) * 100;
+                if (position < 0) position = 0;
+                if (position > 100) position = 100;
+                overlay.style.width = position + '%';
+                handle.style.left = position + '%';
+            };
+
+            container.addEventListener('mousedown', () => isDragging = true);
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                move(e.clientX);
+            });
+        }
+
+        // Initialize On Load
+        window.onload = function() {
+            renderProducts();
+            init3DBackground();
+            initHeroSlider();
+        };
+    </script>
+</body>
+</html>
